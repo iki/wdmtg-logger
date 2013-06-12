@@ -1,9 +1,9 @@
 {
   "name": "wdmtg-logger",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": [
     "./lib/logger.js",
-    "./lib/logger.min.js",
+    "./lib/logger.min.js"
   ],
   "ignore": [
     ".jshintrc",

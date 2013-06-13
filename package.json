@@ -1,6 +1,6 @@
 {
   "name": "wdmtg-logger",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "repository": {
     "type": "git",
@@ -18,7 +18,8 @@
     "grunt-contrib-watch": "~0.4.4",
     "grunt-contrib-coffee": "~0.7.0",
     "mocha": "~1.10.0",
-    "chai": "~1.6.1"
+    "chai": "~1.6.1",
+    "grunt-contrib-concat": "~0.3.0"
   },
   "main": "./lib/logger.js",
   "engines": {
@@ -29,6 +30,5 @@
     "MFG Labs",
     "logger"
   ],
-  "scripts": {
-  }
+  "scripts": {}
 }

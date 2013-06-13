@@ -1,6 +1,6 @@
 {
   "name": "wdmtg-logger",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": [
     "./lib/logger.js",
     "./lib/logger.min.js"

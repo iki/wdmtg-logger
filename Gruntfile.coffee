@@ -8,11 +8,20 @@ module.exports = ->
       build: 
         files: 'lib/logger.js': 'src/coffee/logger.coffee'
     
+    concat:
+      build:
+        stripBanners: no
+        src: [
+          'components/loggly-castor/js/loggly.js'
+          'lib/logger.js'
+
+        ]
+        dest: 'lib/logger.js'
+
     uglify:
       options: mangle: no
       vendor: 
         files: 'lib/logger.min.js': [
-          'components/loggly/js/loggly.js'
           'lib/logger.js'
         ]
 
@@ -25,8 +34,10 @@ module.exports = ->
   @loadNpmTasks 'grunt-contrib-uglify'
   @loadNpmTasks 'grunt-contrib-coffee'
   @loadNpmTasks 'grunt-contrib-watch'
+  @loadNpmTasks 'grunt-contrib-concat'
 
   @registerTask 'default', [
     'coffee'
+    'concat'
     'uglify'
   ]

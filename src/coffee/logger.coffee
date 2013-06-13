@@ -16,25 +16,25 @@ Log = (options={}) ->
   consoleLog = (txt, level=1) -> console.log("[#{((+new Date()) - begin) / 1000}] #{txt}") if level <= logLevel
 
 
-  if options.loggly?.key?
+  if options.loggly
     window.onload = ->
       host = if "https:" is document.location.protocol then "https://logs.loggly.com" else "http://logs.loggly.com"
 
       castor = new loggly.castor 
-        url: host+'/inputs/'+options.loggly.key
-        level: options.loggly.level ? 'log'
+        url: host+'/inputs/'+options.loggly
+        level: 'log'
 
       consoleLog = (txt, level=1) -> 
         since = ((+new Date()) - begin) / 1000
         if level <= logLevel
           console.log "[#{since}] #{txt}"
-
+        if level <= 5
           castor.log
             url: window.location.href
             since: since
             username: USER.username
             id: USER.id
-            lebel: level
+            level: level
             msg: txt
 
 

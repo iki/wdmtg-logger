@@ -1,13 +1,42 @@
+# Avoid `console` errors in browsers that lack a console.
+unless window.console and console.log
+  do ->
+    noop = ->
+
+    methods = ["assert", "clear", "count", "debug", "dir", "dirxml", "error", "exception", "group", "groupCollapsed", "groupEnd", "info", "log", "markTimeline", "profile", "profileEnd", "markTimeline", "table", "time", "timeEnd", "timeStamp", "trace", "warn"]
+    length = methods.length
+    console = window.console = {}
+    console[methods[length]] = noop  while length--
+
 # "micro logger that works" (tm)
 Log = (options={}) ->
   prefix   = options.prefix ? ''
   logLevel = options.logLevel ? 0
   begin    = options.begin ? +new Date()
-  consoleLog = (txt, level=1) ->
-  if console?.log?
-    consoleLog = (txt, level=1) -> console.log("[#{((+new Date()) - begin) / 1000}] #{txt}") if level <= logLevel
+  consoleLog = (txt, level=1) -> console.log("[#{((+new Date()) - begin) / 1000}] #{txt}") if level <= logLevel
 
-  # TODO support Logly
+
+  if options.loggly?.key?
+    window.onload = ->
+      host = if "https:" is document.location.protocol then "https://logs.loggly.com" else "http://logs.loggly.com"
+
+      castor = new loggly.castor 
+        url: host+'/inputs/'+options.loggly.key
+        level: options.loggly.level ? 'log'
+
+      consoleLog = (txt, level=1) -> 
+        since = ((+new Date()) - begin) / 1000
+        if level <= logLevel
+          console.log "[#{since}] #{txt}"
+
+          castor.log
+            url: window.location.href
+            since: since
+            username: USER.username
+            id: USER.id
+            lebel: level
+            msg: txt
+
 
   inspect: (obj) -> console?.dir?(obj) if logLevel >= 3
   devel  : (txt) -> consoleLog "DEVEL #{prefix}#{txt}", 4 

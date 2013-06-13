@@ -11,7 +11,10 @@ module.exports = ->
     uglify:
       options: mangle: no
       vendor: 
-        files: 'lib/logger.min.js': 'lib/logger.js'
+        files: 'lib/logger.min.js': [
+          'components/loggly/js/loggly.js'
+          'lib/logger.js'
+        ]
 
     watch:
       coffee:

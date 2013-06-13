@@ -1,6 +1,6 @@
 {
   "name": "wdmtg-logger",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "main": [
     "./lib/logger.js",
     "./lib/logger.min.js"
@@ -8,5 +8,8 @@
   "ignore": [
     ".jshintrc",
     "**/*.txt"
-  ]
+  ],
+  "dependencies": {
+    "loggly-castor": "loggly/loggly-castor"
+  }
 }

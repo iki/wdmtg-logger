@@ -32,12 +32,13 @@ Log = (options={}) ->
         console.log "[#{since}] #{txt}"
       if level <= 1
         castor.log
-          url     : window.location.href
-          #since   : since
-          username: USER.username
-          id      : USER.id
-          #level   : level
-          msg     : txt
+          url       : window.location.href
+          #since    : since
+          username  : USER.username
+          id        : USER.id
+          #level    : level
+          stacktrace: printStackTrace()
+          msg       : txt
 
   inspect: (obj) -> console?.dir?(obj) if logLevel >= 3
   devel  : (txt) -> consoleLog "DEVEL #{prefix}#{txt}", 4 

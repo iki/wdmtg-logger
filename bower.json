@@ -10,6 +10,7 @@
     "**/*.txt"
   ],
   "dependencies": {
-    "loggly-castor": "loggly/loggly-castor"
+    "loggly-castor": "loggly/loggly-castor",
+    "browser-detect": "rsyring/browser-detect"
   }
 }

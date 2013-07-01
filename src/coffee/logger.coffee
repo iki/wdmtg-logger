@@ -1,12 +1,3 @@
-# Avoid `console` errors in browsers that lack a console.
-#unless window.console and console.log
-#  do ->
-#    noop = ->
-#
-#    methods = ["assert", "clear", "count", "debug", "dir", "dirxml", "error", "exception", "group", "groupCollapsed", "groupEnd", "info", "log", "markTimeline", "profile", "profileEnd", "markTimeline", "table", "time", "timeEnd", "timeStamp", "trace", "warn"]
-#    length = methods.length
-#    console = window.console = {}
-#    console[methods[length]] = noop  while length--
 
 BrowserDetect =
   init: ->
@@ -107,44 +98,80 @@ BrowserDetect =
 
 BrowserDetect.init()
 
+
+# default native logger
+window.console ?=
+  log: ->
+  dir: ->
+  assert: ->
+  clear: ->
+  count: ->
+  debug: ->
+  dir: ->
+  dirxml: ->
+  error: ->
+  exception: ->
+  group: ->
+  groupCollapsed: ->
+  groupEnd: ->
+  info: ->
+  log: ->
+  markTimeline: ->
+  profile: ->
+  profileEnd: ->
+  table: ->
+  time: ->
+  timeEnd: ->
+  timeStamp: ->
+  trace: ->
+  warn: ->
+
 # "micro logger that works" (tm)
-Log = (options={}) ->
-  console.log "Log"
-  prefix   = options.prefix ? ''
-  logLevel = options.level ? 0
-  begin    = options.begin ? +new Date()
+class Logger
+  constructor: (options={}) ->
 
-  consoleLog = (txt, level=1) -> console.log("[#{((+new Date()) - begin) / 1000}] #{txt}") if level <= logLevel
+    @logLevel = options.level ? 0
+    @begin    = options.begin ? +new Date()
+    @format   = options.format ? ->
 
-  console.log "options.key: #{options.key}"
-  if options.key
+    @_console = window.console
+    for k,v of @_console
+      @[k] = v
 
-    host = if "https:" is document.location.protocol then "https://logs.loggly.com" else "http://logs.loggly.com"
+    @_log = (level, txt) => 
+      return unless level <= @logLevel
+      @_console.log "[" + @_ts() + "] " + txt
 
-    castor = new loggly.castor 
-      url: "#{host}/inputs/#{options.key}"
-      level: 'log'
+    if options.key
+      castor = new loggly.castor 
+        url: "#{document.location.protocol ? 'http:'}//logs.loggly.com/inputs/#{options.key}"
+        level: 'log'
+        _original = @_log
+        # rewrite @_log with loggly logging
+        @_log = (level, txt) => 
+          if level <= @logLevel
+            _original level, txt
+          if level <= 1
+            kv =
+              url    : window.location.href
+              msg    : txt
+              browser: name: BrowserDetect.browser, version: BrowserDetect.version
+              system: BrowserDetect.OS
+            @format kv
+            castor.log kv
 
-    consoleLog = (txt, level=1) -> 
-      since = ((+new Date()) - begin) / 1000
-      if level <= logLevel
-        console.log "[#{since}] #{txt}"
-      if level <= 1
-        castor.log
-          url       : window.location.href
-          #since    : since
-          username  : USER.username
-          id        : USER.id
-          #level    : level
-          msg       : txt
-          browser: name: BrowserDetect.browser, version: BrowserDetect.version
-          system: BrowserDetect.OS
 
-  inspect: (obj) -> console?.dir?(obj) if logLevel >= 3
-  devel  : (txt) -> consoleLog "DEVEL #{prefix}#{txt}", 4 
-  debug  : (txt) -> consoleLog "DEBUG #{prefix}#{txt}", 3 
-  info   : (txt) -> consoleLog "INFO  #{prefix}#{txt}", 2 
-  error  : (txt) -> consoleLog "ERROR #{prefix}#{txt}", 1
-  wrap   : Log
-  
-(exports ? @).Log = Log
+  _ts: -> "#{((+new Date()) - @begin) / 1000}"
+
+  dir: (obj) -> @_console.dir(obj) if @logLevel >= 3
+  inspect: (obj) -> @dir
+  devel  : (txt) -> @_log 4, "DEVEL " + txt
+  debug  : (txt) -> @_log 3, "DEBUG " + txt
+  info   : (txt) -> @_log 2, "INFO  " + txt
+  warn   : (txt) -> @_log 1, "WARN  " + txt
+  error  : (txt) -> @_log 1, "ERROR " + txt
+  log    : (txt) -> @_log 3, "LOG   " + txt
+
+
+
+

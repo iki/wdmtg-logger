@@ -15,7 +15,6 @@ window.console ?=
   groupCollapsed: ->
   groupEnd: ->
   info: ->
-  log: ->
   markTimeline: ->
   profile: ->
   profileEnd: ->
@@ -36,6 +35,7 @@ class Logger
 
     @_console = window.console
     for k,v of @_console
+      continue if k in ['dir','inspect','debug','log','warn','info','error'] 
       @[k] = v
 
     @_log = (level, txt) => 
@@ -64,7 +64,6 @@ class Logger
   _ts: -> "#{((+new Date()) - @begin) / 1000}"
 
   dir: (obj) -> @_console.dir(obj) if @logLevel >= 3
-  inspect: (obj) -> @dir
   devel  : (txt) -> @_log 4, "DEVEL " + txt
   debug  : (txt) -> @_log 3, "DEBUG " + txt
   info   : (txt) -> @_log 2, "INFO  " + txt

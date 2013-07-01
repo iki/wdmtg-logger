@@ -3,14 +3,18 @@ module.exports = ->
   @initConfig
 
     pkg: @file.readJSON 'package.json'
-    
+    coffee:
+      compile:
+        options: bare: yes
+        files: 'lib/logger.js': 'src/coffee/logger.coffee'
+
     concat:
       build:
         stripBanners: no
         src: [
           'components/browser-detect/browser-detect.js'
           'components/loggly-castor/js/loggly.js'
-          'src/logger.js'
+          'lib/logger.js'
         ]
         dest: 'lib/logger.js'
 
@@ -24,8 +28,9 @@ module.exports = ->
         tasks: [ 'coffee' ]
         options: debounceDelay: 250
 
+  @loadNpmTasks 'grunt-contrib-coffee'
   @loadNpmTasks 'grunt-contrib-uglify'
   @loadNpmTasks 'grunt-contrib-watch'
   @loadNpmTasks 'grunt-contrib-concat'
 
-  @registerTask 'default', [ 'concat', 'uglify' ]
+  @registerTask 'default', [ 'coffee', 'concat', 'uglify' ]
